@@ -18,8 +18,8 @@ const (
 
 var (
 	t    = time.Now()
-	name = kingpin.Flag("switch", "Switch which log need view").Default().String()
-	date = kingpin.Flag("date", "Date of logs").Default(t.Format("2006-01-02")).String()
+	name = kingpin.Flag("switch", "Switch which log need view").Short('s').Default().Required().String()
+	date = kingpin.Flag("date", "Date of logs").Short('d').Default(t.Format("2006-01-02")).String()
 )
 
 func main() {
@@ -35,4 +35,5 @@ func main() {
 		log.Printf("Error opening log file for %s at %s: %s", n, d, err)
 	}
 	defer logFile.Close()
+
 }
