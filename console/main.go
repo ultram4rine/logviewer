@@ -30,9 +30,10 @@ func main() {
 		n = *name
 		d = *date
 		//r = *rows
+		logPath = "/var/log/remote/" + n + "/" + d
 	)
 
-	logFile, err := os.Open("/var/log/remote/" + n + "/" + d)
+	logFile, err := os.Open(logPath)
 	if err != nil {
 		log.Printf("Error opening log file for %s at %s: %s", n, d, err)
 	}
