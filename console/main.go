@@ -20,6 +20,7 @@ var (
 	t    = time.Now()
 	name = kingpin.Flag("switch", "Switch which log need view").Short('s').Default().Required().String()
 	date = kingpin.Flag("date", "Date of logs").Short('d').Default(t.Format("2006-01-02")).String()
+	rows = kingpin.Flag("rows", "Number of rows to view").Short('r').Default("40").Int()
 )
 
 func main() {
@@ -28,6 +29,7 @@ func main() {
 	var (
 		n = *name
 		d = *date
+		//r = *rows
 	)
 
 	logFile, err := os.Open("/var/log/remote/" + n + "/" + d)
