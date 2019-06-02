@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"os"
 	"time"
 
@@ -35,8 +37,29 @@ func main() {
 
 	logFile, err := os.Open(logPath)
 	if err != nil {
-		log.Printf("Error opening log file for %s at %s: %s", n, d, err)
+		log.Printf("Error opening log file of %s at %s: %s", n, d, err)
 	}
 	defer logFile.Close()
 
+	lines, err := linesCount(logFile)
+	if err != nil {
+		log.Printf("Error counting lines in log file of %s at %s: %s", n, d, err)
+	}
+	fmt.Println(lines)
+}
+
+func linesCount(file *os.File) (int, error) {
+	scanner := bufio.NewScanner(bufio.NewReader(file))
+	scanner.Split(bufio.ScanLines)
+
+	count := 0
+	for scanner.Scan() {
+		count++
+	}
+
+	if err := scanner.Err(); err != nil {
+		return -1, err
+	}
+
+	return count, nil
 }
