@@ -37,13 +37,13 @@ func main() {
 
 	logFile, err := os.Open(logPath)
 	if err != nil {
-		log.Printf("Error opening log file of %s at %s: %s", n, d, err)
+		log.Fatalf("Error opening log file of %s at %s: %s", n, d, err)
 	}
 	defer logFile.Close()
 
 	lines, err := linesCount(logFile)
 	if err != nil {
-		log.Printf("Error counting lines in log file of %s at %s: %s", n, d, err)
+		log.Fatalf("Error counting lines in log file of %s at %s: %s", n, d, err)
 	}
 	fmt.Println(lines)
 }
