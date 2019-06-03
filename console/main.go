@@ -29,9 +29,9 @@ func main() {
 	kingpin.Parse()
 
 	var (
-		n = *name
-		d = *date
-		//r = *rows
+		n       = *name
+		d       = *date
+		r       = *rows
 		logPath = "/var/log/remote/" + n + "/" + d
 	)
 
@@ -39,7 +39,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error counting lines in log file of %s at %s: %s", n, d, err)
 	}
-	fmt.Println(lines)
+
+	err = linesPrint(logPath, lines, r)
+	if err != nil {
+		log.Fatalf("Error printing log file of %s at %s: %s", n, d, err)
+	}
 }
 
 func linesCount(filePath string) (int, error) {
@@ -62,4 +66,31 @@ func linesCount(filePath string) (int, error) {
 	}
 
 	return count, nil
+}
+
+func linesPrint(filePath string, count, rows int) error {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	reader := bufio.NewReader(file)
+	scanner := bufio.NewScanner(reader)
+	scanner.Split(bufio.ScanLines)
+
+	i := 0
+	for scanner.Scan() {
+		i++
+		if i > count-rows {
+			line := scanner.Text()
+
+			fmt.Printf("%d: %s\n", i, line)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+
+	return nil
 }
