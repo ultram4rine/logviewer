@@ -35,20 +35,20 @@ func main() {
 		logPath = "/var/log/remote/" + n + "/" + d
 	)
 
-	logFile, err := os.Open(logPath)
-	if err != nil {
-		log.Fatalf("Error opening log file of %s at %s: %s", n, d, err)
-	}
-	defer logFile.Close()
-
-	lines, err := linesCount(logFile)
+	lines, err := linesCount(logPath)
 	if err != nil {
 		log.Fatalf("Error counting lines in log file of %s at %s: %s", n, d, err)
 	}
 	fmt.Println(lines)
 }
 
-func linesCount(file *os.File) (int, error) {
+func linesCount(filePath string) (int, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return -1, err
+	}
+	defer file.Close()
+
 	scanner := bufio.NewScanner(bufio.NewReader(file))
 	scanner.Split(bufio.ScanLines)
 
