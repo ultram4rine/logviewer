@@ -122,7 +122,7 @@ func linesPrint(filePath, period string, count, rows int) error {
 				return err
 			}
 
-			duration := time.Since(timeOfLog)
+			duration := timeForPeriod.Sub(timeOfLog)
 			switch unit {
 			case "h", "hours":
 				{
