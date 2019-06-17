@@ -1,3 +1,3 @@
 # LogViewer
 
-Tool to view last logs from switch
+Tool and web-interface to view last logs from switch
