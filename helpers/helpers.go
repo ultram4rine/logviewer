@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+//LinesCount count number of lines in file
 func LinesCount(filePath string) (int, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -103,7 +104,7 @@ func LinesPrint(filePath, period string, count, rows int) error {
 				}
 			default:
 				{
-					return errors.New("Unknow time unit")
+					return errors.New("Unknown time unit")
 				}
 			}
 		}
