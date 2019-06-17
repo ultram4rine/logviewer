@@ -13,14 +13,6 @@ import (
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
-const (
-	infoColor    = "\033[1;34m%s\033[0m"
-	noticeColor  = "\033[1;36m%s\033[0m"
-	warningColor = "\033[1;33m%s\033[0m"
-	errorColor   = "\033[1;31m%s\033[0m"
-	debugColor   = "\033[0;36m%s\033[0m"
-)
-
 var (
 	t      = time.Now()
 	name   = kingpin.Flag("switch", "Switch which log need view").Short('s').Default().Required().String()
