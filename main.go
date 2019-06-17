@@ -38,7 +38,7 @@ func main() {
 	})
 
 	log.Println("Starting...")
-	err := http.ListenAndServe("localhost"+port, nil)
+	err := http.ListenAndServe(port, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
