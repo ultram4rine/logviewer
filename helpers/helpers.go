@@ -33,10 +33,11 @@ func LinesCount(filePath string) (int, error) {
 	return count, nil
 }
 
-func LinesPrint(filePath, period string, count, rows int) error {
+//Lines2String writing lines of file into string
+func Lines2String(filePath, period string, count, rows int) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer file.Close()
 
@@ -44,32 +45,35 @@ func LinesPrint(filePath, period string, count, rows int) error {
 	timeForPeriodStr := timeForPeriod.Format("Jan  2 15:04:05")
 	timeForPeriod, err = time.Parse("Jan  2 15:04:05", timeForPeriodStr)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	reader := bufio.NewReader(file)
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(bufio.ScanLines)
 
-	i := 0
+	var (
+		logs = ""
+		i    = 0
+	)
 	if rows != -1 {
 		for scanner.Scan() {
 			i++
 			if i > count-rows {
 				line := scanner.Text()
 
-				fmt.Printf("%d: %s\n", i, line)
+				logs += fmt.Sprintf("%d: %s\n", i, line)
 			}
 		}
 		if err := scanner.Err(); err != nil {
-			return err
+			return "", err
 		}
 	} else {
 		unit := period[strings.LastIndexAny(period, "1234567890")+1 : len(period)]
 		num := period[0:strings.Index(period, unit)]
 		numFloat, err := strconv.ParseFloat(num, 64)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		for scanner.Scan() {
@@ -79,7 +83,7 @@ func LinesPrint(filePath, period string, count, rows int) error {
 			timeOfLogStr := line[0 : strings.Index(line, strings.Split(filePath, "/")[4])-1]
 			timeOfLog, err := time.Parse("Jan  2 15:04:05", timeOfLogStr)
 			if err != nil {
-				return err
+				return "", err
 			}
 
 			duration := timeForPeriod.Sub(timeOfLog)
@@ -87,28 +91,28 @@ func LinesPrint(filePath, period string, count, rows int) error {
 			case "h", "hours":
 				{
 					if duration.Hours() < numFloat {
-						fmt.Printf("%d: %s\n", i, line)
+						logs += fmt.Sprintf("%d: %s\n", i, line)
 					}
 				}
 			case "m", "minutes":
 				{
 					if duration.Minutes() < numFloat {
-						fmt.Printf("%d: %s\n", i, line)
+						logs += fmt.Sprintf("%d: %s\n", i, line)
 					}
 				}
 			case "s", "seconds":
 				{
 					if duration.Seconds() < numFloat {
-						fmt.Printf("%d: %s\n", i, line)
+						logs += fmt.Sprintf("%d: %s\n", i, line)
 					}
 				}
 			default:
 				{
-					return errors.New("Unknown time unit")
+					return "", errors.New("Unknown time unit")
 				}
 			}
 		}
 	}
 
-	return nil
+	return logs, nil
 }

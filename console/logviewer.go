@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ultram4rine/logviewer/helpers"
@@ -33,8 +34,9 @@ func main() {
 		log.Fatalf("Error counting lines in log file of %s at %s: %s", n, d, err)
 	}
 
-	err = helpers.LinesPrint(logPath, p, lines, r)
+	logs, err := helpers.Lines2String(logPath, p, lines, r)
 	if err != nil {
 		log.Fatalf("Error printing log file of %s at %s: %s", n, d, err)
 	}
+	fmt.Print(logs)
 }
