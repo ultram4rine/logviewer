@@ -49,7 +49,7 @@ html, body{
     font-family: consolas;
     font-size: 14px;
     width: 100%;
-    height: 70%;
+    height: calc(70% - 40px);
     overflow: auto;
     background-color: whitesmoke;
 }
