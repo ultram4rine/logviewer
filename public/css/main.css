@@ -34,6 +34,7 @@ html, body{
     border-radius: 5%;
 }
 #responce{
+    padding: 5px 0 0 5px;
     font-family: consolas;
     font-size: 14px;
     width: 100%;
