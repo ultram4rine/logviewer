@@ -70,7 +70,7 @@ html, body{
     font-family: consolas;
     font-size: 14px;
     width: 100%;
-    height: calc(70% - 40px);
+    height: calc(100% - 40px);
     overflow: auto;
     background-color: whitesmoke;
 }
