@@ -21,6 +21,10 @@ html, body{
     width: 40%;
     margin: 0 auto;
 }
+.login b{
+    color: black;
+    font-family: sans-serif;
+}
 .login input[type=text], input[type=password] {
     font-family: sans-serif;
     width: 100%;
