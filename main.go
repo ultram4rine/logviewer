@@ -43,6 +43,7 @@ func main() {
 		log.Fatal(errors.New("Empty session key"))
 	}
 	store = sessions.NewCookieStore([]byte(config.SessionKey))
+	store.MaxAge(3600)
 
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 
