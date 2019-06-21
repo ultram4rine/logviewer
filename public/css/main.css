@@ -9,6 +9,46 @@ html, body{
     margin-right: 0px;
     overflow: hidden;
 }
+.wrap{
+    background-color: whitesmoke;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+.login{
+    align-self: center;
+    width: 40%;
+    margin: 0 auto;
+}
+.login input[type=text], input[type=password] {
+    font-family: sans-serif;
+    width: 100%;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 5px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+.login input[type=text]:focus, input[type=password]:focus{
+    border: 1px solid #006894;
+}
+.login button{
+    font-size: 14px;
+    font-family: sans-serif;
+    background: #006894;
+    color: white;
+    padding: 12px 20px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    margin-left: 25%;
+    border: none;
+    cursor: pointer;
+    width: 50%;
+    transition: 0.5s;
+}
 #header{
     display: flex;
     width: 100%;
