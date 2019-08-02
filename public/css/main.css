@@ -88,7 +88,7 @@ html, body{
     border: 2px solid black;
     border-radius: 5%;
 }
-#header #ip{
+#header #name{
     position: absolute;
     top: 7px;
     right: calc(10% + 10px);

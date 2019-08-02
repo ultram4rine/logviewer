@@ -1,27 +1,15 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
-	"io/ioutil"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/go-ldap/ldap"
-	"github.com/gorilla/sessions"
-	"github.com/ultram4rine/logviewer/helpers"
+	_ "github.com/kshvakov/clickhouse"
+	log "github.com/sirupsen/logrus"
+	"github.com/ultram4rine/logviewer/db"
+	"github.com/ultram4rine/logviewer/server"
 )
-
-var store *sessions.CookieStore
-
-var config struct {
-	LdapUser      string `json:"ldapUser"`
-	LdapPassword  string `json:"ldapPassword"`
-	LdapServer    string `json:"ldapServer"`
-	LdapBaseDN    string `json:"ldapBaseDN"`
-	SessionKey    string `json:"sessionKey"`
-}
 
 func main() {
 	var (
@@ -29,43 +17,25 @@ func main() {
 		confPath = "conf.json"
 	)
 
-	confdata, err := ioutil.ReadFile(confPath)
+	err := server.Init(confPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	err = json.Unmarshal(confdata, &config)
-	if err != nil {
-		log.Fatal(err)
-	}
-	
-	if config.SessionKey == "" {
-		log.Fatal(errors.New("Empty session key"))
-	}
-	store = sessions.NewCookieStore([]byte(config.SessionKey))
-	store.MaxAge(3600)
 
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 
 	http.HandleFunc("/get", func(w http.ResponseWriter, r *http.Request) {
-		if !alreadyLogin(r){
+		if !alreadyLogin(r) {
 			http.Redirect(w, r, "/login", 301)
 		}
 
 		date := r.FormValue("date")
-		ip := r.FormValue("ip")
+		name := r.FormValue("name")
 		time := r.FormValue("time")
 
-		logPath := "/var/log/remote/" + ip + "/" + date
-
-		lines, err := helpers.LinesCount(logPath)
+		logs, err := db.GetLogfromSwitch(name, time)
 		if err != nil {
-			log.Printf("Error counting lines in log file of %s at %s: %s", ip, date, err)
-		}
-
-		logs, err := helpers.Lines2String(logPath, time, lines, -1)
-		if err != nil {
-			log.Printf("Error printing log file of %s at %s: %s", ip, date, err)
+			log.Printf("Error printing log file of %s at %s: %s", name, date, err)
 		}
 
 		w.Write([]byte(logs))
@@ -74,7 +44,7 @@ func main() {
 	http.HandleFunc("/login", loginHandler)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if !alreadyLogin(r){
+		if !alreadyLogin(r) {
 			http.Redirect(w, r, "/login", 301)
 		}
 
@@ -95,29 +65,30 @@ func auth(login, password string) (string, error) {
 
 	username := ""
 
-	l, err := ldap.Dial("tcp", config.LdapServer)
+	l, err := ldap.Dial("tcp", server.Config.LdapServer)
 	if err != nil {
 		return username, err
 	}
 	defer l.Close()
 
-	if l.Bind(config.LdapUser, config.LdapPassword); err != nil {
+	if l.Bind(server.Config.LdapUser, server.Config.LdapPassword); err != nil {
 		return username, err
 	}
 
 	searchRequest := ldap.NewSearchRequest(
-		config.LdapBaseDN,
+		server.Config.LdapBaseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		"(&(sAMAccountName="+login+"))",
 		[]string{"cn"},
 		nil,
 	)
 
-	if sr, err := l.Search(searchRequest); err != nil || len(sr.Entries) != 1 {
+	sr, err := l.Search(searchRequest)
+	if err != nil || len(sr.Entries) != 1 {
 		return username, errors.New("User not found")
-	} else {
-		username = sr.Entries[0].GetAttributeValue("cn")
 	}
+
+	username = sr.Entries[0].GetAttributeValue("cn")
 
 	if err = l.Bind(username, password); err != nil {
 		return "", err
@@ -127,12 +98,12 @@ func auth(login, password string) (string, error) {
 }
 
 func alreadyLogin(r *http.Request) bool {
-	session, _ := store.Get(r, "logviewer_session")
+	session, _ := server.Server.Store.Get(r, "logviewer_session")
 	return session.Values["userName"] != nil
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "logviewer_session")
+	session, _ := server.Server.Store.Get(r, "logviewer_session")
 
 	if r.Method == "GET" {
 		http.ServeFile(w, r, "public/html/login.html")
@@ -144,13 +115,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if userName, err := auth(r.FormValue("uname"), r.FormValue("psw")); err != nil {
+		userName, err := auth(r.FormValue("uname"), r.FormValue("psw"))
+		if err != nil {
 			http.Redirect(w, r, "/login", 301)
 			return
-		} else {
-			session.Values["userName"] = userName
-			session.Save(r, w)
-			http.Redirect(w, r, "/", 301)
 		}
+
+		session.Values["userName"] = userName
+		session.Save(r, w)
+		http.Redirect(w, r, "/", 301)
 	}
 }
