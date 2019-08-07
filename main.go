@@ -26,7 +26,7 @@ func main() {
 
 	http.HandleFunc("/get", func(w http.ResponseWriter, r *http.Request) {
 		if !alreadyLogin(r) {
-			http.Redirect(w, r, "/login", 301)
+			http.Redirect(w, r, "/login", http.StatusFound)
 		}
 
 		date := r.FormValue("date")
@@ -45,7 +45,7 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if !alreadyLogin(r) {
-			http.Redirect(w, r, "/login", 301)
+			http.Redirect(w, r, "/login", http.StatusFound)
 		}
 
 		http.ServeFile(w, r, "public/html/index.html")
@@ -111,18 +111,18 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 
 		if alreadyLogin(r) {
-			http.Redirect(w, r, "/", 301)
+			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
 
 		userName, err := auth(r.FormValue("uname"), r.FormValue("psw"))
 		if err != nil {
-			http.Redirect(w, r, "/login", 301)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 
 		session.Values["userName"] = userName
 		session.Save(r, w)
-		http.Redirect(w, r, "/", 301)
+		http.Redirect(w, r, "/", http.StatusFound)
 	}
 }
