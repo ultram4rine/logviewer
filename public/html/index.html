@@ -1,20 +1,33 @@
 <!DOCTYPE HTML>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>LogViewer</title>
-        <link href="/public/css/main.css" rel="stylesheet">
-        <script type="text/javascript" src="/public/js/app.js"></script>
-    </head>
-    <body>
-        <div id="header">
-            <div id="service">LogViewer</div>
-            <input id="date" type="date">
-            <input id="time" type="text" placeholder="Time, e.g. 3hours or 3h" required>
-            <input id="name" type="text" placeholder="IP" required>
-            <button id="show" onclick="send()">Show logs</button>
-        </div>
-        <div id="responce"></div>
-    </body>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogViewer</title>
+    <link href="/public/css/main.css" rel="stylesheet">
+    <script type="text/javascript" src="/public/js/app.js"></script>
+</head>
+
+<body>
+    <div id="header">
+        <div id="service">LogViewer</div>
+        <select id="time">
+            <option value="5">Last 5 minutes</option>
+            <option value="15">Last 15 minutes</option>
+            <option value="30">Last 30 minutes</option>
+            <option value="60">Last 1 hour</option>
+            <option value="180">Last 3 hour</option>
+            <option value="360">Last 6 hour</option>
+            <option value="720">Last 12 hour</option>
+            <option value="1440">Last 1 day</option>
+            <option value="4320">Last 3 day</option>
+            <option value="10080">Last 1 week</option>
+        </select>
+        <input id="name" type="text" placeholder="Switch Name" required>
+        <button id="show" onclick="send()">Show logs</button>
+    </div>
+    <div id="responce"></div>
+</body>
+
 </html>
