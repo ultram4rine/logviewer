@@ -1,0 +1,11 @@
+[Unit]
+Description=LogViewer WEB Application
+
+[Service]
+WorkingDirectory=/etc/www/logviewer/
+ExecStart=/etc/www/logviewer/main
+User=root
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
