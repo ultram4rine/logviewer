@@ -15,7 +15,7 @@ type switchLog struct {
 	LogFacility  int       `db:"facility"`
 	LogSeverity  int       `db:"severity"`
 	LogPriority  int       `db:"priority"`
-	LogTime      time.Time `db:"log_time"`
+	LogTime      string    `db:"log_time"`
 	LogEventNum  string    `db:"log_event_number"`
 	LogModule    string    `db:"log_module"`
 	LogMessage   string    `db:"log_msg"`
@@ -49,18 +49,22 @@ func GetAvailableSwitches() (map[string]string, error) {
 	return switches, nil
 }
 
-func GetLogfromSwitch(swName, period string) (string, error) {
+func GetLogfromSwitch(swName string, period int) (string, error) {
 	var (
 		ls   []switchLog
 		logs string
 	)
 
-	if err := server.Server.DB.Select(&ls, "SELECT * FROM switchlogs WHERE sw_name = ?", swName); err != nil {
+	duration := time.Minute * -time.Duration(period)
+
+	time := time.Now().Add(duration)
+
+	if err := server.Server.DB.Select(&ls, "SELECT * FROM switchlogs WHERE sw_name = ? AND ts_remote > ? ORDER BY ts_local", swName, time); err != nil {
 		return "", err
 	}
 
-	for i, l := range ls {
-		logs += fmt.Sprintf("%d: %s\n", i, l.LogMessage)
+	for _, l := range ls {
+		logs += fmt.Sprintf("%s: %s\n", l.LogTime, l.LogMessage)
 	}
 
 	return logs, nil

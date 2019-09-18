@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/go-ldap/ldap"
 	_ "github.com/kshvakov/clickhouse"
@@ -29,13 +30,17 @@ func main() {
 			http.Redirect(w, r, "/login", http.StatusFound)
 		}
 
-		date := r.FormValue("date")
 		name := r.FormValue("name")
 		time := r.FormValue("time")
 
-		logs, err := db.GetLogfromSwitch(name, time)
+		periodInt, err := strconv.Atoi(time)
 		if err != nil {
-			log.Printf("Error printing log file of %s at %s: %s", name, date, err)
+			log.Printf("Error parsing time: %s", err)
+		}
+
+		logs, err := db.GetLogfromSwitch(name, periodInt)
+		if err != nil {
+			log.Printf("Error printing log file of %s: %s", name, err)
 		}
 
 		w.Write([]byte(logs))
