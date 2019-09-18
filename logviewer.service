@@ -2,8 +2,8 @@
 Description=LogViewer WEB Application
 
 [Service]
-WorkingDirectory=/etc/www/logviewer/
-ExecStart=/etc/www/logviewer/main
+WorkingDirectory=/var/www/logviewer/
+ExecStart=/var/www/logviewer/main
 User=root
 Restart=always
 
