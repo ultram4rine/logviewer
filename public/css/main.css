@@ -69,6 +69,16 @@ input[type="password"]:focus {
   margin-left: 10px;
   color: white;
 }
+#header #type {
+  margin-left: 5px;
+  margin-top: 7px;
+  font-family: sans-serif;
+  font-size: 14px;
+  width: 10%;
+  height: 26px;
+  border: 2px solid black;
+  border-radius: 5%;
+}
 #header #time {
   position: absolute;
   top: 7px;
@@ -81,6 +91,17 @@ input[type="password"]:focus {
   border-radius: 5%;
 }
 #header #name {
+  position: absolute;
+  top: 7px;
+  right: calc(10% + 10px);
+  font-family: sans-serif;
+  font-size: 14px;
+  width: 10%;
+  height: 20px;
+  border: 2px solid black;
+  border-radius: 5%;
+}
+#header #mac {
   position: absolute;
   top: 7px;
   right: calc(10% + 10px);

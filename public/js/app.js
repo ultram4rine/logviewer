@@ -15,3 +15,30 @@ function send() {
   };
   xhr.send(req);
 }
+
+$(document).ready(function() {
+  $("#type").change(function() {
+    if (
+      $(this)
+        .children("option:selected")
+        .val() == "sw"
+    ) {
+      $("#time").show(0);
+      $("#name").show(0);
+      $("#mac").hide(0);
+    } else if (
+      $(this)
+        .children("option:selected")
+        .val() == "dhcp"
+    ) {
+      $("#time").hide(0);
+      $("#name").hide(0);
+      $("#mac").show(0);
+    }
+  });
+
+  $("#type option[value=sw]").attr("selected", "true");
+  $("#time").show(0);
+  $("#name").show(0);
+  $("#mac").hide(0);
+});
