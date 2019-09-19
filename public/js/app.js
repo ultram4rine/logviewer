@@ -1,19 +1,34 @@
 function send() {
-  var wrap = document.getElementById("responce");
+  var wrap = $("#responce");
 
-  var name = document.getElementById("name").value;
-  var time = document.getElementById("time").value;
-  var req = "name=" + name + "&time=" + time;
+  var type;
+  var name = $("#name").val();
+  var time = $("#time").val();
+  var mac = $("#mac").val();
 
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", "/get");
-  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  xhr.onload = function() {
-    if (xhr.status == 200) {
-      wrap.innerText = xhr.responseText;
+  if (
+    $("#type")
+      .children("option:selected")
+      .val() == "sw"
+  ) {
+    type = "sw";
+  } else if (
+    $("#type")
+      .children("option:selected")
+      .val() == "dhcp"
+  ) {
+    type = "dhcp";
+  }
+
+  $.ajax({
+    type: "GET",
+    url: "/get",
+    data: { type: type, name: name, time: time, mac: mac },
+    dataType: "text",
+    success: function(data) {
+      wrap.html(data.replace(/\n/g, "<br>"));
     }
-  };
-  xhr.send(req);
+  });
 }
 
 $(document).ready(function() {
@@ -36,6 +51,8 @@ $(document).ready(function() {
       $("#mac").show(0);
     }
   });
+
+  $("#show").click(send);
 
   $("#type option[value=sw]").attr("selected", "true");
   $("#time").show(0);
