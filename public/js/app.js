@@ -6,6 +6,8 @@ function send() {
   var time = $("#time").val();
   var mac = $("#mac").val();
 
+  var macRegExp = /^[a-f0-9]{12}$/;
+
   if (
     $("#type")
       .children("option:selected")
@@ -18,6 +20,10 @@ function send() {
       .val() == "dhcp"
   ) {
     type = "dhcp";
+    if (!macRegExp.test(mac)) {
+      alert("MAC-Address in wrong format");
+      return;
+    }
   }
 
   $.ajax({
