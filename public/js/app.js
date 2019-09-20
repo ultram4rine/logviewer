@@ -25,6 +25,11 @@ function send() {
     url: "/get",
     data: { type: type, name: name, time: time, mac: mac },
     dataType: "text",
+    statusCode: {
+      401: function() {
+        window.location.href = "/login";
+      }
+    },
     success: function(data) {
       wrap.html(data.replace(/\n/g, "<br>"));
     }

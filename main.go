@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"reflect"
 	"errors"
 	"net/http"
+	"reflect"
 	"strconv"
 
 	"github.com/go-ldap/ldap"
@@ -39,7 +39,7 @@ func main() {
 
 	http.HandleFunc("/get", func(w http.ResponseWriter, r *http.Request) {
 		if !alreadyLogin(r) {
-			http.Redirect(w, r, "/login", http.StatusFound)
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
 		}
 
 		name := r.FormValue("name")
