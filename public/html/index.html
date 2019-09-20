@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LogViewer</title>
     <link href="/public/css/main.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script type="text/javascript" src="/public/js/app.js"></script>
-  </head>
+</head>
 
-  <body>
+<body>
     <div id="header">
-      <div id="service">LogViewer</div>
-      <select id="type">
+        <div id="service">LogViewer</div>
+        <select id="type">
         <option value="sw">Switch</option>
         <option value="dhcp">DHCP</output>
       </select>
-      <select id="time">
+        <select id="time">
         <option value="5">Last 5 minutes</option>
         <option value="15">Last 15 minutes</option>
         <option value="30">Last 30 minutes</option>
@@ -28,10 +29,11 @@
         <option value="4320">Last 3 day</option>
         <option value="10080">Last 1 week</option>
       </select>
-      <input id="name" type="text" placeholder="Switch Name" required />
-      <input id="mac" type="text" placeholder="MAC-Address" required />
-      <button id="show">Show logs</button>
+        <input id="name" type="text" placeholder="Switch Name" required />
+        <input id="mac" type="text" placeholder="MAC-Address" required />
+        <button id="show">Show logs</button>
     </div>
     <div id="responce"></div>
-  </body>
+</body>
+
 </html>
