@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-ldap/ldap"
 	_ "github.com/kshvakov/clickhouse"
-	"github.com/olivere/elastic/v7"
+	"github.com/olivere/elastic"
 	log "github.com/sirupsen/logrus"
 	"github.com/ultram4rine/logviewer/db"
 	"github.com/ultram4rine/logviewer/server"
@@ -42,20 +42,31 @@ func main() {
 			http.Redirect(w, r, "/login", http.StatusUnauthorized)
 		}
 
-		name := r.FormValue("name")
-		time := r.FormValue("time")
+		typ := r.FormValue("type")
 
-		periodInt, err := strconv.Atoi(time)
-		if err != nil {
-			log.Printf("Error parsing time: %s", err)
+		switch typ {
+		case "sw":
+			{
+				name := r.FormValue("name")
+				time := r.FormValue("time")
+				periodInt, err := strconv.Atoi(time)
+				if err != nil {
+					log.Printf("Error parsing time: %s", err)
+				}
+
+				logs, err := db.GetLogfromSwitch(name, periodInt)
+				if err != nil {
+					log.Printf("Error printing log file of %s: %s", name, err)
+				}
+
+				w.Write([]byte(logs))
+			}
+		case "dhcp":
+			{
+				//mac := r.FormValue("mac")
+
+			}
 		}
-
-		logs, err := db.GetLogfromSwitch(name, periodInt)
-		if err != nil {
-			log.Printf("Error printing log file of %s: %s", name, err)
-		}
-
-		w.Write([]byte(logs))
 	})
 
 	http.HandleFunc("/login", loginHandler)
