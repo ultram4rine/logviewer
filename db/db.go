@@ -1,9 +1,12 @@
 package db
 
 import (
+	"context"
 	"fmt"
+	"reflect"
 	"time"
 
+	"github.com/olivere/elastic/v7"
 	"github.com/ultram4rine/logviewer/server"
 )
 
@@ -19,6 +22,15 @@ type switchLog struct {
 	LogEventNum  string    `db:"log_event_number"`
 	LogModule    string    `db:"log_module"`
 	LogMessage   string    `db:"log_msg"`
+}
+
+type LogEntry struct {
+	Mac       string
+	IP        string
+	Timestamp int
+	Link      string
+	Message   string
+	Request   string
 }
 
 func GetAvailableSwitches() (map[string]string, error) {
@@ -68,4 +80,31 @@ func GetLogfromSwitch(swName string, period int) (string, error) {
 	}
 
 	return logs, nil
+}
+
+//GetDHCPLogs geting logs from elasticSearch
+func GetDHCPLogs(mac string) ([]LogEntry, error) {
+	client, err := elastic.NewClient(elastic.SetURL("http://ns.sgu.ru:9200"), elastic.SetSniff(false))
+	if err != nil {
+		return nil, err
+	}
+
+	termQuery := elastic.NewTermQuery("mac", mac)
+	searchRequest, err := client.Search().
+		Index("dhcp").
+		Query(termQuery).
+		Sort("timestamp", false).
+		From(0).Size(20).
+		Pretty(true).
+		Do(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	var result []LogEntry
+	for _, item := range searchRequest.Each(reflect.TypeOf(LogEntry{})) {
+		result = append(result, item.(LogEntry))
+	}
+
+	return result, nil
 }

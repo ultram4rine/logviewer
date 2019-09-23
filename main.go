@@ -1,28 +1,16 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"net/http"
-	"reflect"
 	"strconv"
 
 	"github.com/go-ldap/ldap"
 	_ "github.com/kshvakov/clickhouse"
-	"github.com/olivere/elastic"
 	log "github.com/sirupsen/logrus"
 	"github.com/ultram4rine/logviewer/db"
 	"github.com/ultram4rine/logviewer/server"
 )
-
-type logEntry struct {
-	Mac       string
-	IP        string
-	Timestamp int
-	Link      string
-	Message   string
-	Request   string
-}
 
 func main() {
 	var (
@@ -51,12 +39,12 @@ func main() {
 				time := r.FormValue("time")
 				periodInt, err := strconv.Atoi(time)
 				if err != nil {
-					log.Printf("Error parsing time: %s", err)
+					log.Printf("Error parsing time: %v", err)
 				}
 
 				logs, err := db.GetLogfromSwitch(name, periodInt)
 				if err != nil {
-					log.Printf("Error printing log file of %s: %s", name, err)
+					log.Printf("Error printing log file of %s: %v", name, err)
 				}
 
 				w.Write([]byte(logs))
@@ -153,31 +141,4 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		session.Save(r, w)
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
-}
-
-func searchDhcpElastic(mac string) (result []logEntry, err error) {
-	ctx := context.Background()
-
-	client, err := elastic.NewClient(elastic.SetURL("http://ns.sgu.ru:9200"), elastic.SetSniff(false))
-	if err != nil {
-		return result, err
-	}
-
-	termQuery := elastic.NewTermQuery("mac", mac)
-	searchRequest, err := client.Search().
-		Index("dhcp").
-		Query(termQuery).
-		Sort("timestamp", false).
-		From(0).Size(20).
-		Pretty(true).
-		Do(ctx)
-	if err != nil {
-		return result, err
-	}
-
-	for _, item := range searchRequest.Each(reflect.TypeOf(logEntry{})) {
-		result = append(result, item.(logEntry))
-	}
-
-	return result, nil
 }
