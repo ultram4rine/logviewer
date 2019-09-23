@@ -84,7 +84,7 @@ func GetLogfromSwitch(swName string, period int) (string, error) {
 
 //GetDHCPLogs geting logs from elasticSearch
 func GetDHCPLogs(mac string) ([]LogEntry, error) {
-	client, err := elastic.NewClient(elastic.SetURL("http://ns.sgu.ru:9200"), elastic.SetSniff(false))
+	client, err := elastic.NewClient(elastic.SetURL("http://"+server.Config.ElasticServer), elastic.SetSniff(false))
 	if err != nil {
 		return nil, err
 	}
