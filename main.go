@@ -39,12 +39,12 @@ func main() {
 				time := r.FormValue("time")
 				periodInt, err := strconv.Atoi(time)
 				if err != nil {
-					log.Printf("Error parsing time: %v", err)
+					log.Warnf("Error parsing time: %v", err)
 				}
 
 				logs, err := db.GetLogfromSwitch(name, periodInt)
 				if err != nil {
-					log.Printf("Error printing log file of %s: %v", name, err)
+					log.Warnf("Error printing log file of %s: %v", name, err)
 				}
 
 				w.Write([]byte(logs))
