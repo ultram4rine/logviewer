@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
+	"flag"
 	"net/http"
 	"strconv"
 
@@ -12,13 +14,15 @@ import (
 	"github.com/ultram4rine/logviewer/server"
 )
 
-func main() {
-	var (
-		port     = ":4027"
-		confPath = "conf.json"
-	)
+var (
+	configPath = flag.String("c", "logviewer.json", "Path to logviewer config json")
+	port       = flag.String("p", "4004", "Listen port")
+)
 
-	err := server.Init(confPath)
+func main() {
+	flag.Parse()
+
+	err := server.Init(*configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,8 +55,20 @@ func main() {
 			}
 		case "dhcp":
 			{
-				//mac := r.FormValue("mac")
+				mac := r.FormValue("mac")
 
+				result, err := db.GetDHCPLogs(mac)
+				if err != nil {
+					log.Warnf("Error with geting dhcp logs: %v", err)
+				}
+
+				logsJSON, err := json.Marshal(result)
+				if err != nil {
+					log.Warn(err)
+				}
+
+				w.Header().Set("Content-Type", "application/json")
+				w.Write(logsJSON)
 			}
 		}
 	})
@@ -68,7 +84,7 @@ func main() {
 	})
 
 	log.Println("Starting...")
-	err = http.ListenAndServe(port, nil)
+	err = http.ListenAndServe(":"+*port, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
