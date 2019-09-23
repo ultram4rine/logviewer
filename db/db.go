@@ -2,8 +2,8 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/olivere/elastic/v7"
@@ -27,7 +27,8 @@ type switchLog struct {
 type LogEntry struct {
 	Mac       string
 	IP        string
-	Timestamp int
+	Timestamp int64
+	Time      string
 	Link      string
 	Message   string
 	Request   string
@@ -90,7 +91,7 @@ func GetDHCPLogs(mac string) ([]LogEntry, error) {
 	}
 
 	termQuery := elastic.NewTermQuery("mac", mac)
-	searchRequest, err := client.Search().
+	searchResult, err := client.Search().
 		Index("dhcp").
 		Query(termQuery).
 		Sort("timestamp", false).
@@ -102,8 +103,17 @@ func GetDHCPLogs(mac string) ([]LogEntry, error) {
 	}
 
 	var result []LogEntry
-	for _, item := range searchRequest.Each(reflect.TypeOf(LogEntry{})) {
-		result = append(result, item.(LogEntry))
+	if searchResult.TotalHits() > 0 {
+		for _, hit := range searchResult.Hits.Hits {
+			var item LogEntry
+			err := json.Unmarshal(hit.Source, &item)
+			if err != nil {
+				return result, err
+			}
+
+			item.Time = time.Unix(0, item.Timestamp * int64(time.Millisecond)).Format("15:04:05 02-Jan-2006")
+			result = append(result, item)
+		}
 	}
 
 	return result, nil

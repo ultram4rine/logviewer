@@ -20,7 +20,7 @@ var Config struct {
 	DBPassword    string `json:"dbPassword"`
 	SessionKey    string `json:"sessionKey"`
 	EncryptionKey string `json:"encryptionKey"`
-	ElasticServer string `json:"ns.sgu.ru:9200"`
+	ElasticServer string `json:"elasticServer"`
 }
 
 var Server struct {
