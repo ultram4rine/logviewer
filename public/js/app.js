@@ -6,9 +6,6 @@ function send() {
     var time = $("#time").val();
     var mac = $("#mac").val();
 
-    var macRegExpShort = /([0-9a-fA-F][0-9a-fA-F]){5}([0-9a-fA-F][0-9a-fA-F])/;
-    var macRegExpFull = /^((([a-fA-F0-9][a-fA-F0-9]+[-]){5}|([a-fA-F0-9][a-fA-F0-9]+[:]){5})([a-fA-F0-9][a-fA-F0-9])$)|(^([a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]+[.]){2}([a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]))$/;
-
     if (
         $("#type")
         .children("option:selected")
@@ -23,16 +20,11 @@ function send() {
         type = "dhcp";
         mac = mac.toLowerCase();
         mac = mac.replace(/\.|-|:/g, '');
-        // mac = mac.replace(/:/g, '');
-        // mac = mac.replace(/-/g, '');
-        // mac = mac.replace(/\./g, '');
 
-        alert(mac)
         if (mac.length == 12) {
             if (!macRegExpShort.test(mac)) {
-                alert("Wrong mac-address!1")
+                alert("Wrong mac-address!")
             }
-            alert(mac)
         } else {
             alert("Mac-address too long!")
         }
