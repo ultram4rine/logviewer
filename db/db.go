@@ -111,7 +111,7 @@ func GetDHCPLogs(mac string) ([]LogEntry, error) {
 				return result, err
 			}
 
-			item.Time = time.Unix(0, item.Timestamp * int64(time.Millisecond)).Format("15:04:05 02-Jan-2006")
+			item.Time = time.Unix(0, item.Timestamp*int64(time.Millisecond)).Format("15:04:05 02-Jan-2006")
 			result = append(result, item)
 		}
 	}

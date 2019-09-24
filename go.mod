@@ -7,6 +7,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20190910110746-680d30ca3117 // indirect
 	github.com/go-ldap/ldap v3.0.3+incompatible
 	github.com/google/go-cmp v0.3.1 // indirect
+	github.com/gorilla/mux v1.6.2
 	github.com/gorilla/sessions v1.2.0
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/kshvakov/clickhouse v1.3.11

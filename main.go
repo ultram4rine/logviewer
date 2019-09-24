@@ -4,8 +4,10 @@ import (
 	"flag"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	_ "github.com/kshvakov/clickhouse"
 	log "github.com/sirupsen/logrus"
+
 	"github.com/ultram4rine/logviewer/handlers"
 	"github.com/ultram4rine/logviewer/server"
 )
@@ -20,15 +22,14 @@ func main() {
 		log.Fatalf("Can't init programm: %v", err)
 	}
 
-	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+	router := mux.NewRouter()
 
-	http.HandleFunc("/get", handlers.GetHandler)
-	http.HandleFunc("/login", handlers.LoginHandler)
-	http.HandleFunc("/", handlers.RootHandler)
+	router.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+
+	router.HandleFunc("/get", handlers.GetHandler)
+	router.HandleFunc("/login", handlers.LoginHandler)
+	router.HandleFunc("/", handlers.RootHandler)
 
 	log.Println("Starting server on " + server.Config.Port + " port")
-	err = http.ListenAndServe(server.Config.Port, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(http.ListenAndServe(server.Config.Port, router))
 }
