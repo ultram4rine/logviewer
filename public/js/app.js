@@ -104,8 +104,8 @@ $(document).ready(function() {
 
   $("#show").click(send);
 
-  $("#type option[value=sw]").attr("selected", "true");
-  $("#time").show(0);
-  $("#name").show(0);
-  $("#mac").hide(0);
+  $("#type option[value=dhcp]").attr("selected", "true");
+  $("#time").hide(0);
+  $("#name").hide(0);
+  $("#mac").show(0);
 });
