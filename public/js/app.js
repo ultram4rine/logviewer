@@ -1,72 +1,84 @@
 function send() {
-  var wrap = $("#responce");
+    var wrap = $("#responce");
 
-  var type;
-  var name = $("#name").val();
-  var time = $("#time").val();
-  var mac = $("#mac").val();
+    var type;
+    var name = $("#name").val();
+    var time = $("#time").val();
+    var mac = $("#mac").val();
 
-  var macRegExp = /^[a-f0-9]{12}$/;
+    var macRegExpShort = /([0-9a-fA-F][0-9a-fA-F]){5}([0-9a-fA-F][0-9a-fA-F])/;
+    var macRegExpFull = /^((([a-fA-F0-9][a-fA-F0-9]+[-]){5}|([a-fA-F0-9][a-fA-F0-9]+[:]){5})([a-fA-F0-9][a-fA-F0-9])$)|(^([a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]+[.]){2}([a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]))$/;
 
-  if (
-    $("#type")
-      .children("option:selected")
-      .val() == "sw"
-  ) {
-    type = "sw";
-  } else if (
-    $("#type")
-      .children("option:selected")
-      .val() == "dhcp"
-  ) {
-    type = "dhcp";
-    if (!macRegExp.test(mac)) {
-      alert("MAC-Address in wrong format");
-      return;
-    }
-  }
-
-  $.ajax({
-    type: "GET",
-    url: "/get",
-    data: { type: type, name: name, time: time, mac: mac },
-    dataType: "text",
-    statusCode: {
-      401: function() {
-        window.location.href = "/login";
-      }
-    },
-    success: function(data) {
-      wrap.html(data.replace(/\n/g, "<br>"));
-    }
-  });
-}
-
-$(document).ready(function() {
-  $("#type").change(function() {
     if (
-      $(this)
+        $("#type")
         .children("option:selected")
         .val() == "sw"
     ) {
-      $("#time").show(0);
-      $("#name").show(0);
-      $("#mac").hide(0);
+        type = "sw";
     } else if (
-      $(this)
+        $("#type")
         .children("option:selected")
         .val() == "dhcp"
     ) {
-      $("#time").hide(0);
-      $("#name").hide(0);
-      $("#mac").show(0);
+        type = "dhcp";
+        mac = mac.toLowerCase();
+        mac = mac.replace(/\.|-|:/g, '');
+        // mac = mac.replace(/:/g, '');
+        // mac = mac.replace(/-/g, '');
+        // mac = mac.replace(/\./g, '');
+
+        alert(mac)
+        if (mac.length == 12) {
+            if (!macRegExpShort.test(mac)) {
+                alert("Wrong mac-address!1")
+            }
+            alert(mac)
+        } else {
+            alert("Mac-address too long!")
+        }
     }
-  });
 
-  $("#show").click(send);
+    $.ajax({
+        type: "GET",
+        url: "/get",
+        data: { type: type, name: name, time: time, mac: mac },
+        dataType: "text",
+        statusCode: {
+            401: function() {
+                window.location.href = "/login";
+            }
+        },
+        success: function(data) {
+            wrap.html(data.replace(/\n/g, "<br>"));
+        }
+    });
+}
 
-  $("#type option[value=sw]").attr("selected", "true");
-  $("#time").show(0);
-  $("#name").show(0);
-  $("#mac").hide(0);
+$(document).ready(function() {
+    $("#type").change(function() {
+        if (
+            $(this)
+            .children("option:selected")
+            .val() == "sw"
+        ) {
+            $("#time").show(0);
+            $("#name").show(0);
+            $("#mac").hide(0);
+        } else if (
+            $(this)
+            .children("option:selected")
+            .val() == "dhcp"
+        ) {
+            $("#time").hide(0);
+            $("#name").hide(0);
+            $("#mac").show(0);
+        }
+    });
+
+    $("#show").click(send);
+
+    $("#type option[value=sw]").attr("selected", "true");
+    $("#time").show(0);
+    $("#name").show(0);
+    $("#mac").hide(0);
 });
