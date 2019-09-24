@@ -14,10 +14,7 @@ import (
 	"github.com/ultram4rine/logviewer/server"
 )
 
-var (
-	configPath = flag.String("c", "logviewer.json", "Path to logviewer config json")
-	port       = flag.String("p", "4004", "Listen port")
-)
+var configPath = flag.String("c", "conf.json", "Path to logviewer config json")
 
 func main() {
 	flag.Parse()
@@ -84,7 +81,7 @@ func main() {
 	})
 
 	log.Println("Starting...")
-	err = http.ListenAndServe(":"+*port, nil)
+	err = http.ListenAndServe(server.Config.Port, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
