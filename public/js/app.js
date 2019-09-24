@@ -1,5 +1,6 @@
 function send() {
     var wrap = $("#responce");
+    var displayResources = $("#display-resources");
 
     var type;
     var name = $("#name").val();
@@ -32,20 +33,52 @@ function send() {
         }
     }
 
-    $.ajax({
-        type: "GET",
-        url: "/get",
-        data: { type: type, name: name, time: time, mac: mac },
-        dataType: (type == "dhcp") ? "json" : "text",
-        statusCode: {
-            401: function() {
-                window.location.href = "/login";
+    if (type == "dhcp") {
+        $.ajax({
+            type: "GET",
+            url: "/get",
+            data: { type: type, mac: mac },
+            dataType: "json",
+            statusCode: {
+                401: function() {
+                    window.location.href = "/login";
+                }
+            },
+            success: function(data) {
+                console.log(data);
+                var output =
+                    "<table><thead><tr><th>Mac</th><th>Message</th><th>Time</th></thead><tbody>";
+                for (var i in data) {
+                    output +=
+                        "<tr><td>" +
+                        data[i].Mac +
+                        "</td><td>" +
+                        data[i].Message +
+                        "</td><td>" +
+                        data[i].Time +
+                        "</td></tr>";
+                }
+                output += "</tbody></table>";
+                displayResources.html(output);
+                $("table").addClass("table");
             }
-        },
-        success: function(data) {
-            wrap.html(data.replace(/\n/g, "<br>"));
-        }
-    });
+        });
+    } else {
+        $.ajax({
+            type: "GET",
+            url: "/get",
+            data: { type: type, name: name, time: time, mac: mac },
+            dataType: "text",
+            statusCode: {
+                401: function() {
+                    window.location.href = "/login";
+                }
+            },
+            success: function(data) {
+                wrap.html(data.replace(/\n/g, "<br>"));
+            }
+        });
+    }
 }
 
 $(document).ready(function() {
