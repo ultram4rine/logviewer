@@ -1,9 +1,10 @@
 [Unit]
-Description=LogViewer WEB Application
+Description=LogViewer WEB Application for viewing logs
+After=network-online.target
 
 [Service]
 WorkingDirectory=/var/www/logviewer/
-ExecStart=/var/www/logviewer/main
+ExecStart=/usr/local/bin/logviewer -c /var/www/logviewer/conf.json
 User=root
 Restart=always
 
