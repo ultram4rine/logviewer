@@ -6,6 +6,8 @@ function send() {
     var time = $("#time").val();
     var mac = $("#mac").val();
 
+    var macRegExp = /([0-9a-fA-F][0-9a-fA-F]){5}([0-9a-fA-F][0-9a-fA-F])/;
+
     if (
         $("#type")
         .children("option:selected")
@@ -22,7 +24,7 @@ function send() {
         mac = mac.replace(/\.|-|:/g, '');
 
         if (mac.length == 12) {
-            if (!macRegExpShort.test(mac)) {
+            if (!macRegExp.test(mac)) {
                 alert("Wrong mac-address!")
             }
         } else {
@@ -34,7 +36,7 @@ function send() {
         type: "GET",
         url: "/get",
         data: { type: type, name: name, time: time, mac: mac },
-        dataType: "text",
+        dataType: (type == "dhcp") ? "json" : "text",
         statusCode: {
             401: function() {
                 window.location.href = "/login";
