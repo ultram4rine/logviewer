@@ -47,11 +47,13 @@ function send() {
       success: function(data) {
         console.log(data);
         var output =
-          "<table><thead><tr><th>Mac</th><th>Message</th><th>Time</th></thead><tbody>";
+          "<table><thead><tr><th>Mac</th><th>IP</th><th>Message</th><th>Time</th></thead><tr>";
         for (var i in data) {
           output +=
-            "<tr><td>" +
+            "<td>" +
             data[i].Mac +
+            "</td><td>" +
+            data[i].IP +
             "</td><td>" +
             data[i].Message +
             "</td><td>" +
@@ -60,7 +62,6 @@ function send() {
         }
         output += "</tbody></table>";
         displayResources.html(output);
-        $("table").addClass("table");
       }
     });
   } else {
