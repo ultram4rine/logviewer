@@ -10,6 +10,7 @@ import (
 )
 
 var Config struct {
+	Port          string `json:"listenPort"`
 	LdapUser      string `json:"ldapUser"`
 	LdapPassword  string `json:"ldapPassword"`
 	LdapServer    string `json:"ldapServer"`
