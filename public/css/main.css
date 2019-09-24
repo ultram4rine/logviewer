@@ -131,3 +131,37 @@ input[type="password"]:focus {
   overflow: auto;
   background-color: whitesmoke;
 }
+
+table {
+  overflow: hidden;
+  width: 100%;
+  margin-top: 0;
+  border-collapse: collapse;
+}
+thead {
+  background-color: #006894;
+  width: 100%;
+}
+thead tr {
+  height: 31px;
+}
+thead th {
+  font-family: sans-serif;
+  font-weight: normal;
+  font-size: 14px;
+  color: #fff;
+  border: 1px solid black;
+}
+tbody tr {
+  height: 31px;
+}
+tbody tr:hover {
+  background-color: #0083bb;
+  color: white;
+}
+tbody td {
+  font-family: sans-serif;
+  font-weight: normal;
+  font-size: 14px;
+  border: 1px solid #006894;
+}
