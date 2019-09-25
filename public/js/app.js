@@ -27,9 +27,11 @@ function send() {
     if (mac.length == 12) {
       if (!macRegExp.test(mac)) {
         alert("Wrong mac-address!");
+        return;
       }
     } else {
       alert("Mac-address too long!");
+      return;
     }
   }
 
@@ -45,7 +47,6 @@ function send() {
         }
       },
       success: function(data) {
-        console.log(data);
         var output =
           "<table><thead><tr><th>Mac</th><th>IP</th><th>Message</th><th>Time</th></thead><tr>";
         for (var i in data) {
@@ -103,7 +104,9 @@ $(document).ready(function() {
     }
   });
 
-  $("#show").click(send);
+  $("#show").click(function() {
+    return send();
+  });
 
   $("#type option[value=dhcp]").attr("selected", "true");
   $("#time").hide(0);
