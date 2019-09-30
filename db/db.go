@@ -37,7 +37,7 @@ type LogEntry struct {
 func GetAvailableSwitches() (map[string]string, error) {
 	var switches = make(map[string]string)
 
-	rows, err := server.Server.DB.Query("SELECT sw_name, sw_ip FROM switchlogs")
+	rows, err := server.Server.DB.Query("SELECT DISTINCT sw_name, sw_ip FROM switchlogs")
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +55,35 @@ func GetAvailableSwitches() (map[string]string, error) {
 
 		switches[name] = ip
 	}
+	if rows.Err() != nil {
+		return nil, err
+	}
+
+	return switches, nil
+}
+
+func GetSimilarSwitches(t) (map[string]string, error) {
+	var switches = make(map[string]string)
+
+	rows, err := server.Server.DB.Query("SELECT DISTINCT sw_name, sw_ip FROM switchlogs WHERE sw_name LIKE ?", t+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			name string
+			ip   string
+		)
+
+		if err = rows.Scan(&name, &ip); err != nil {
+			return nil, err
+		}
+
+		switches[name] = ip
+	}
+
 	if rows.Err() != nil {
 		return nil, err
 	}
