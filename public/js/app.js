@@ -147,7 +147,26 @@ $(document).ready(function() {
         }
       });
     } else {
-      $("#similars").hide(0);
+      $.get("/getavailable", function(data) {
+        $("#similar").remove();
+        $("#similars").show(0);
+        var output = "";
+        for (var i in data) {
+          output +=
+            "<div id='similar' name='" +
+            data[i].SwName +
+            "'>" +
+            data[i].SwName +
+            " - " +
+            data[i].SwIP +
+            "</div>";
+        }
+        $("#similars").append(output);
+        $("#similar").click(function() {
+          $("#name").val($(this).attr("name"));
+          $("#similars").hide(0);
+        });
+      });
     }
   });
 });

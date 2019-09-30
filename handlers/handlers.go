@@ -67,6 +67,26 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//AvailableHandler gets all avaible switches to show logs
+func AvailableHandler(w http.ResponseWriter, r *http.Request) {
+	if !alreadyLogin(r) {
+		http.Redirect(w, r, "/login", http.StatusUnauthorized)
+	}
+
+	switches, err := db.GetAvailableSwitches()
+	if err != nil {
+		log.Warnf("Error getting available switches name: %s", err)
+	}
+
+	switchesJSON, err := json.Marshal(switches)
+	if err != nil {
+		log.Warn("Error marshalling vailable switches: %s", err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(switchesJSON)
+}
+
 //SimilarHandler gets similar switch names
 func SimilarHandler(w http.ResponseWriter, r *http.Request) {
 	if !alreadyLogin(r) {
