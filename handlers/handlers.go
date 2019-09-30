@@ -67,6 +67,28 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//SimilarHandler gets similar switch names
+func SimilarHandler(w http.ResponseWriter, r *http.Request) {
+	if !alreadyLogin(r) {
+		http.Redirect(w, r, "/login", http.StatusUnauthorized)
+	}
+
+	template := r.FormValue("t")
+
+	switches, err := db.GetSimilarSwitches(template)
+	if err != nil {
+		log.Warnf("Error getting similar switches name: %s", err)
+	}
+
+	switchesJSON, err := json.Marshal(switches)
+	if err != nil {
+		log.Warn("Error marshalling switches")
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(switchesJSON)
+}
+
 //LoginHandler handle login page
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := server.Server.Store.Get(r, "logviewer_session")
