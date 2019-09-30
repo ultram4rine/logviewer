@@ -112,4 +112,42 @@ $(document).ready(function() {
   $("#time").hide(0);
   $("#name").hide(0);
   $("#mac").show(0);
+
+  $(document).on("input", "#name", function(ev) {
+    if ($(ev.target).val().length > 0) {
+      $.ajax({
+        type: "GET",
+        url: "/findsimilar",
+        data: { t: $(ev.target).val() },
+        dataType: "json",
+        statusCode: {
+          401: function() {
+            window.location.href = "/login";
+          }
+        },
+        success: function(data) {
+          $("#similar").remove();
+          $("#similars").show(0);
+          var output = "";
+          for (var i in data) {
+            output +=
+              "<div id='similar' name='" +
+              data[i].SwName +
+              "'>" +
+              data[i].SwName +
+              " - " +
+              data[i].SwIP +
+              "</div>";
+          }
+          $("#similars").append(output);
+          $("#similar").click(function() {
+            $("#name").val($(this).attr("name"));
+            $("#similars").hide(0);
+          });
+        }
+      });
+    } else {
+      $("#similars").hide(0);
+    }
+  });
 });
