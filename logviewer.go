@@ -27,7 +27,7 @@ func main() {
 	router.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 
 	router.HandleFunc("/get", handlers.GetHandler).Methods("GET")
-	router.HandleFunc("/getavaible", handlers.SimilarHandler).Methods("GET")
+	router.HandleFunc("/getavailable", handlers.SimilarHandler).Methods("GET")
 	router.HandleFunc("/findsimilar", handlers.SimilarHandler).Methods("GET")
 	router.HandleFunc("/login", handlers.LoginHandler)
 	router.HandleFunc("/", handlers.RootHandler)
