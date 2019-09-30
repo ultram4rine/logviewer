@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"time"
 
 	"github.com/olivere/elastic/v7"
@@ -13,13 +14,13 @@ import (
 type switchLog struct {
 	TimeLocal    time.Time `db:"ts_local"`
 	SwName       string    `db:"sw_name"`
-	SwIP         string    `db:"sw_ip"`
+	SwIP         net.IP    `db:"sw_ip"`
 	LogTimeStamp time.Time `db:"ts_remote"`
-	LogFacility  int       `db:"facility"`
-	LogSeverity  int       `db:"severity"`
-	LogPriority  int       `db:"priority"`
-	LogTime      string    `db:"log_time"`
-	LogEventNum  string    `db:"log_event_number"`
+	LogFacility  uint8     `db:"facility"`
+	LogSeverity  uint8     `db:"severity"`
+	LogPriority  uint8     `db:"priority"`
+	LogTime      time.Time `db:"log_time"`
+	LogEventNum  uint16    `db:"log_event_number"`
 	LogModule    string    `db:"log_module"`
 	LogMessage   string    `db:"log_msg"`
 }
