@@ -62,8 +62,8 @@ func GetAvailableSwitches() (map[string]string, error) {
 	return switches, nil
 }
 
-func GetSimilarSwitches(t) (map[string]string, error) {
-	var switches = make(map[string]string)
+func GetSimilarSwitches(t string) ([]switchLog, error) {
+	var switches []switchLog
 
 	rows, err := server.Server.DB.Query("SELECT DISTINCT sw_name, sw_ip FROM switchlogs WHERE sw_name LIKE ?", t+"%")
 	if err != nil {
@@ -72,16 +72,13 @@ func GetSimilarSwitches(t) (map[string]string, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var (
-			name string
-			ip   string
-		)
+		var s switchLog
 
-		if err = rows.Scan(&name, &ip); err != nil {
+		if err = rows.Scan(&s.SwName, &s.SwIP); err != nil {
 			return nil, err
 		}
 
-		switches[name] = ip
+		switches = append(switches, s)
 	}
 
 	if rows.Err() != nil {
