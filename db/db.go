@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net"
 	"time"
 
@@ -20,9 +19,10 @@ type switchLog struct {
 	LogSeverity  uint8     `db:"severity"`
 	LogPriority  uint8     `db:"priority"`
 	LogTime      time.Time `db:"log_time"`
-	LogEventNum  uint16    `db:"log_event_number"`
-	LogModule    string    `db:"log_module"`
-	LogMessage   string    `db:"log_msg"`
+	LogTimeStr   string
+	LogEventNum  uint16 `db:"log_event_number"`
+	LogModule    string `db:"log_module"`
+	LogMessage   string `db:"log_msg"`
 }
 
 type LogEntry struct {
@@ -86,22 +86,21 @@ func GetSimilarSwitches(t string) ([]switchLog, error) {
 	return switches, nil
 }
 
-func GetLogfromSwitch(swName string, period int) (string, error) {
+func GetLogfromSwitch(swName string, period int) ([]switchLog, error) {
 	var (
-		ls   []switchLog
-		logs string
+		logs []switchLog
 	)
 
 	duration := time.Minute * -time.Duration(period)
 
 	time := time.Now().Add(duration)
 
-	if err := server.Server.DB.Select(&ls, "SELECT * FROM switchlogs WHERE sw_name = ? AND ts_remote > ? ORDER BY ts_local", swName, time); err != nil {
-		return "", err
+	if err := server.Server.DB.Select(&logs, "SELECT log_time, log_event_number, log_module, log_msg FROM switchlogs WHERE sw_name = ? AND ts_remote > ? ORDER BY ts_local", swName, time); err != nil {
+		return nil, err
 	}
 
-	for _, l := range ls {
-		logs += fmt.Sprintf("%s: %s\n", l.LogTime, l.LogMessage)
+	for i := range logs {
+		logs[i].LogTimeStr = logs[i].LogTime.Format("2006-01-02 15:04:05")
 	}
 
 	return logs, nil

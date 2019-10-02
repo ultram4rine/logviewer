@@ -70,14 +70,30 @@ function send() {
       type: "GET",
       url: "/get",
       data: { type: type, name: name, time: time, mac: mac },
-      dataType: "text",
+      dataType: "json",
       statusCode: {
         401: function() {
           window.location.href = "/login";
         }
       },
       success: function(data) {
-        wrap.html(data.replace(/\n/g, "<br>"));
+        console.log(data);
+        var output =
+          "<table><thead><tr><th>Time</th><th>Event Number</th><th>Module</th><th>Message</th></thead><tr>";
+        for (var i in data) {
+          output +=
+            "<td>" +
+            data[i].LogTimeStr +
+            "</td><td>" +
+            data[i].LogEventNum +
+            "</td><td>" +
+            data[i].LogModule +
+            "</td><td>" +
+            data[i].LogMessage +
+            "</td></tr>";
+        }
+        output += "</tbody></table>";
+        displayResources.html(output);
       }
     });
   }

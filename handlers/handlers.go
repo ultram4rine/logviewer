@@ -40,12 +40,18 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 				log.Warnf("Error parsing time: %v", err)
 			}
 
-			logs, err := db.GetLogfromSwitch(name, periodInt)
+			result, err := db.GetLogfromSwitch(name, periodInt)
 			if err != nil {
 				log.Warnf("Error printing log file of %s: %v", name, err)
 			}
 
-			w.Write([]byte(logs))
+			logsJSON, err := json.Marshal(result)
+			if err != nil {
+				log.Warn(err)
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(logsJSON)
 		}
 	case "dhcp":
 		{
