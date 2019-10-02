@@ -95,7 +95,7 @@ func GetLogfromSwitch(swName string, period int) ([]switchLog, error) {
 
 	time := time.Now().Add(duration)
 
-	if err := server.Server.DB.Select(&logs, "SELECT log_time, log_event_number, log_module, log_msg FROM switchlogs WHERE sw_name = ? AND ts_remote > ? ORDER BY ts_local", swName, time); err != nil {
+	if err := server.Server.DB.Select(&logs, "SELECT log_time, log_event_number, log_module, log_msg FROM switchlogs WHERE sw_name = ? AND ts_remote > ? ORDER BY ts_local DESC", swName, time); err != nil {
 		return nil, err
 	}
 
