@@ -82,7 +82,7 @@ function send() {
         for (var i in data) {
           output +=
             "<td>" +
-            data[i].LogTimeStr +
+            data[i].LogTimeStampStr +
             "</td><td>" +
             data[i].LogMessage +
             "</td></tr>";
