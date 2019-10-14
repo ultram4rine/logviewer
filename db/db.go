@@ -11,18 +11,15 @@ import (
 )
 
 type switchLog struct {
-	TimeLocal    time.Time `db:"ts_local"`
-	SwName       string    `db:"sw_name"`
-	SwIP         net.IP    `db:"sw_ip"`
-	LogTimeStamp time.Time `db:"ts_remote"`
-	LogFacility  uint8     `db:"facility"`
-	LogSeverity  uint8     `db:"severity"`
-	LogPriority  uint8     `db:"priority"`
-	LogTime      time.Time `db:"log_time"`
-	LogTimeStr   string
-	LogEventNum  uint16 `db:"log_event_number"`
-	LogModule    string `db:"log_module"`
-	LogMessage   string `db:"log_msg"`
+	TimeLocal       time.Time `db:"ts_local"`
+	SwName          string    `db:"sw_name"`
+	SwIP            net.IP    `db:"sw_ip"`
+	LogTimeStamp    time.Time `db:"ts_remote"`
+	LogTimeStampStr string
+	LogFacility     uint8  `db:"facility"`
+	LogSeverity     uint8  `db:"severity"`
+	LogPriority     uint8  `db:"priority"`
+	LogMessage      string `db:"log_msg"`
 }
 
 type LogEntry struct {
@@ -95,12 +92,12 @@ func GetLogfromSwitch(swName string, period int) ([]switchLog, error) {
 
 	time := time.Now().Add(duration)
 
-	if err := server.Server.DB.Select(&logs, "SELECT log_time, log_event_number, log_module, log_msg FROM switchlogs WHERE sw_name = ? AND ts_remote > ? ORDER BY ts_local DESC", swName, time); err != nil {
+	if err := server.Server.DB.Select(&logs, "SELECT ts_remote, log_msg FROM switchlogs WHERE sw_name = ? AND ts_remote > ? ORDER BY ts_local DESC", swName, time); err != nil {
 		return nil, err
 	}
 
 	for i := range logs {
-		logs[i].LogTimeStr = logs[i].LogTime.Format("2006-01-02 15:04:05")
+		logs[i].LogTimeStampStr = logs[i].LogTimeStamp.Format("2006-01-02 15:04:05")
 	}
 
 	return logs, nil

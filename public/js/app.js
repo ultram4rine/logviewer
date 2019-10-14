@@ -77,17 +77,12 @@ function send() {
         }
       },
       success: function(data) {
-        console.log(data);
         var output =
-          "<table><thead><tr><th>Time</th><th>Event Number</th><th>Module</th><th>Message</th></thead><tr>";
+          "<table><thead><tr><th>Time</th><th>Message</th></thead><tr>";
         for (var i in data) {
           output +=
             "<td>" +
             data[i].LogTimeStr +
-            "</td><td>" +
-            data[i].LogEventNum +
-            "</td><td>" +
-            data[i].LogModule +
             "</td><td>" +
             data[i].LogMessage +
             "</td></tr>";
