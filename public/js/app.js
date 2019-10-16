@@ -124,6 +124,8 @@ $(document).ready(function() {
   $("#name").hide(0);
   $("#mac").show(0);
 
+  hideOnClickOutside("#similars");
+
   $(document).on("input", "#name", function(ev) {
     if ($(ev.target).val().length > 0) {
       $.ajax({
@@ -150,7 +152,7 @@ $(document).ready(function() {
               data[i].SwIP +
               "</div>";
           }
-          $("#similars").append(output);
+          $("#similars").html(output);
           $("#similar").click(function() {
             $("#name").val($(this).attr("name"));
             $("#similars").hide(0);
@@ -172,7 +174,7 @@ $(document).ready(function() {
             data[i].SwIP +
             "</div>";
         }
-        $("#similars").append(output);
+        $("#similars").html(output);
         $("#similar").click(function() {
           $("#name").val($(this).attr("name"));
           $("#similars").hide(0);
@@ -181,3 +183,14 @@ $(document).ready(function() {
     }
   });
 });
+
+function hideOnClickOutside(selector) {
+  const outsideClickListener = event => {
+    $target = $(event.target);
+    if (!$target.closest(selector).length && $(selector).is(":visible")) {
+      $(selector).hide();
+    }
+  };
+
+  document.addEventListener("click", outsideClickListener);
+}
