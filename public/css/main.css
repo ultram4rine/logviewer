@@ -104,14 +104,13 @@ input[type="password"]:focus {
 #header #similars {
   position: absolute;
   top: 33px;
-  right: 0;
-  width: calc(30% + 20px);
+  right: calc(7.5% + 5.5px);
+  width: calc(15% + 10px);
   font-family: sans-serif;
 }
-#header #similar {
+#header .similar {
   cursor: pointer;
-  margin-left: 25%;
-  width: 50%;
+  width: 100%;
   text-align: center;
   height: 30px;
   line-height: 30px;
@@ -120,7 +119,7 @@ input[type="password"]:focus {
   border-left: 1px solid black;
   background-color: white;
 }
-#header #similar:hover {
+#header .similar:hover {
   background-color: whitesmoke;
 }
 #header #mac {

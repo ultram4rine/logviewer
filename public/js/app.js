@@ -139,12 +139,12 @@ $(document).ready(function() {
           }
         },
         success: function(data) {
-          $("#similar").remove();
+          $(".similar").remove();
           $("#similars").show(0);
           var output = "";
           for (var i in data) {
             output +=
-              "<div id='similar' name='" +
+              "<div class='similar' name='" +
               data[i].SwName +
               "'>" +
               data[i].SwName +
@@ -153,20 +153,20 @@ $(document).ready(function() {
               "</div>";
           }
           $("#similars").html(output);
-          $("#similar").click(function() {
+          $(".similar").click(function() {
             $("#name").val($(this).attr("name"));
-            $("#similars").hide(0);
+            $(".similar").remove();
           });
         }
       });
     } else {
       $.get("/getavailable", function(data) {
-        $("#similar").remove();
+        $(".similar").remove();
         $("#similars").show(0);
         var output = "";
         for (var i in data) {
           output +=
-            "<div id='similar' name='" +
+            "<div class='similar' name='" +
             data[i].SwName +
             "'>" +
             data[i].SwName +
@@ -175,19 +175,28 @@ $(document).ready(function() {
             "</div>";
         }
         $("#similars").html(output);
-        $("#similar").click(function() {
+        $(".similar").click(function() {
           $("#name").val($(this).attr("name"));
-          $("#similars").hide(0);
+          $(".similar").remove();
         });
       });
     }
+  });
+
+  $("#name").focus(function() {
+    $("#similars").show(0);
   });
 });
 
 function hideOnClickOutside(selector) {
   const outsideClickListener = event => {
     $target = $(event.target);
-    if (!$target.closest(selector).length && $(selector).is(":visible")) {
+
+    if (
+      !$target.closest(selector).length &&
+      $(selector).is(":visible") &&
+      JSON.stringify($target) !== JSON.stringify($("#name"))
+    ) {
       $(selector).hide();
     }
   };
