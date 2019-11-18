@@ -1,30 +1,30 @@
 function send() {
-  var wrap = $("#responce");
-  var displayResources = $("#display-resources");
+  let wrap = $("#responce");
+  let displayResources = $("#display-resources");
 
-  var type;
-  var name = $("#name").val();
-  var time = $("#time").val();
-  var mac = $("#mac").val();
+  let type;
+  let name = $("#name").val();
+  let time = $("#time").val();
+  let mac = $("#mac").val();
 
-  var macRegExp = /[0-9a-fA-F]{12}/;
+  let macRegExp = /[0-9a-fA-F]{12}/;
 
   if (
     $("#type")
       .children("option:selected")
-      .val() == "sw"
+      .val() === "sw"
   ) {
     type = "sw";
   } else if (
     $("#type")
       .children("option:selected")
-      .val() == "dhcp"
+      .val() === "dhcp"
   ) {
     type = "dhcp";
     mac = mac.toLowerCase();
     mac = mac.replace(/\.|-|:/g, "");
 
-    if (mac.length == 12) {
+    if (mac.length === 12) {
       if (!macRegExp.test(mac)) {
         alert("Wrong mac-address!");
         return;
@@ -35,7 +35,7 @@ function send() {
     }
   }
 
-  if (type == "dhcp") {
+  if (type === "dhcp") {
     $.ajax({
       type: "GET",
       url: "/get",
@@ -99,14 +99,14 @@ $(document).ready(function() {
     if (
       $(this)
         .children("option:selected")
-        .val() == "sw"
+        .val() === "sw"
     ) {
       $("#name").show(0);
       $("#mac").hide(0);
     } else if (
       $(this)
         .children("option:selected")
-        .val() == "dhcp"
+        .val() === "dhcp"
     ) {
       $("#name").hide(0);
       $("#mac").show(0);
