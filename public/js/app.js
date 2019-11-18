@@ -39,7 +39,7 @@ function send() {
     $.ajax({
       type: "GET",
       url: "/get",
-      data: { type: type, mac: mac },
+      data: { type: type, mac: mac, time: time },
       dataType: "json",
       statusCode: {
         401: function() {
@@ -69,7 +69,7 @@ function send() {
     $.ajax({
       type: "GET",
       url: "/get",
-      data: { type: type, name: name, time: time, mac: mac },
+      data: { type: type, name: name, time: time },
       dataType: "json",
       statusCode: {
         401: function() {
