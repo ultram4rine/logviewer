@@ -12,7 +12,7 @@ import (
 	"github.com/ultram4rine/logviewer/server"
 )
 
-var configPath = flag.String("c", "conf.json", "Path to logviewer config json")
+var configPath = flag.String("c", "logviewer.conf.json", "Path to logviewer config json")
 
 func main() {
 	flag.Parse()
