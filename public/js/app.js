@@ -101,7 +101,6 @@ $(document).ready(function() {
         .children("option:selected")
         .val() == "sw"
     ) {
-      $("#time").show(0);
       $("#name").show(0);
       $("#mac").hide(0);
     } else if (
@@ -109,7 +108,6 @@ $(document).ready(function() {
         .children("option:selected")
         .val() == "dhcp"
     ) {
-      $("#time").hide(0);
       $("#name").hide(0);
       $("#mac").show(0);
     }
@@ -120,7 +118,6 @@ $(document).ready(function() {
   });
 
   $("#type option[value=dhcp]").attr("selected", "true");
-  $("#time").hide(0);
   $("#name").hide(0);
   $("#mac").show(0);
 
