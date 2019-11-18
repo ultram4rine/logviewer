@@ -56,8 +56,13 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 	case "dhcp":
 		{
 			mac := r.FormValue("mac")
+			time := r.FormValue("time")
+			periodInt, err := strconv.Atoi(time)
+			if err != nil {
+				log.Warnf("Error parsing time: %v", err)
+			}
 
-			result, err := db.GetDHCPLogs(mac)
+			result, err := db.GetDHCPLogs(mac, periodInt)
 			if err != nil {
 				log.Warnf("Error with geting dhcp logs: %v", err)
 			}

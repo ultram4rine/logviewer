@@ -1,12 +1,9 @@
 package db
 
 import (
-	"context"
-	"encoding/json"
 	"net"
 	"time"
 
-	"github.com/olivere/elastic/v7"
 	"github.com/ultram4rine/logviewer/server"
 )
 
@@ -22,14 +19,23 @@ type switchLog struct {
 	LogMessage      string `db:"log_msg"`
 }
 
-type LogEntry struct {
-	Mac       string
-	IP        string
-	Timestamp int64
-	Time      string
-	Link      string
-	Message   string
-	Request   string
+type dhcpLog struct {
+	Timestamp     time.Time `db:"ts"`
+	TimestampNano int64     `db:"ts_nano"`
+	Message       string    `db:"message"`
+	Server        string    `db:"server"`
+	Severity      string    `db:"severity"`
+	IP            string    `db:"ip"`
+	MAC           uint64    `db:"mac"`
+	Request       string    `db:"request"`
+	ServerID      string    `db:"server_id"`
+	ClientHost    string    `db:"client_host"`
+	Link          string    `db:"link"`
+	Extra         string    `db:"extra"`
+	ReverseName   string    `db:"reverse_name"`
+	DNSName       string    `db:"dns_name"`
+	Reason        string    `db:"reason"`
+	Subnet        string    `db:"subnet"`
 }
 
 func GetAvailableSwitches() ([]switchLog, error) {
@@ -84,9 +90,7 @@ func GetSimilarSwitches(t string) ([]switchLog, error) {
 }
 
 func GetLogfromSwitch(swName string, period int) ([]switchLog, error) {
-	var (
-		logs []switchLog
-	)
+	var logs []switchLog
 
 	duration := time.Minute * -time.Duration(period)
 
@@ -103,33 +107,18 @@ func GetLogfromSwitch(swName string, period int) ([]switchLog, error) {
 	return logs, nil
 }
 
-//GetDHCPLogs geting logs from elasticSearch
-func GetDHCPLogs(mac string) ([]LogEntry, error) {
-	termQuery := elastic.NewTermQuery("mac", mac)
-	searchResult, err := server.Server.ElasticClient.Search().
-		Index("dhcp").
-		Query(termQuery).
-		Sort("timestamp", false).
-		From(0).Size(20).
-		Pretty(true).
-		Do(context.Background())
-	if err != nil {
+func GetDHCPLogs(mac string, period int) ([]dhcpLog, error) {
+	var logs []dhcpLog
+
+	//TODO: parse mac string to uint64
+
+	duration := time.Minute * -time.Duration(period)
+
+	time := time.Now().Add(duration)
+
+	if err := server.Server.DB.Select(&logs, "SELECT ts, message, ip FROM dhcp.events WHERE mac = ? AND ts > ? ORDER BY ts DESC", mac, time); err != nil {
 		return nil, err
 	}
 
-	var result []LogEntry
-	if searchResult.TotalHits() > 0 {
-		for _, hit := range searchResult.Hits.Hits {
-			var item LogEntry
-			err := json.Unmarshal(hit.Source, &item)
-			if err != nil {
-				return result, err
-			}
-
-			item.Time = time.Unix(0, item.Timestamp*int64(time.Millisecond)).Format("02-Jan-2006 15:04:05")
-			result = append(result, item)
-		}
-	}
-
-	return result, nil
+	return logs, nil
 }
