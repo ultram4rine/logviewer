@@ -7,7 +7,6 @@ import (
 
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
-	"github.com/olivere/elastic/v7"
 )
 
 var Config struct {
@@ -26,9 +25,8 @@ var Config struct {
 }
 
 var Server struct {
-	DB            *sqlx.DB
-	Store         *sessions.CookieStore
-	ElasticClient *elastic.Client
+	DB    *sqlx.DB
+	Store *sessions.CookieStore
 }
 
 func Init(confPath string) error {
@@ -47,14 +45,8 @@ func Init(confPath string) error {
 	}
 
 	Server.Store = sessions.NewCookieStore([]byte(Config.SessionKey), []byte(Config.EncryptionKey))
-	Server.Store.MaxAge(3600)
 
 	Server.DB, err = sqlx.Open("clickhouse", Config.DBHost+"?username="+Config.DBUser+"&password="+Config.DBPassword+"&database="+Config.DBName)
-	if err != nil {
-		return err
-	}
-
-	Server.ElasticClient, err = elastic.NewClient(elastic.SetURL("http://"+Config.ElasticServer), elastic.SetSniff(false))
 	if err != nil {
 		return err
 	}
