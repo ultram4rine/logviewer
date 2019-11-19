@@ -1,8 +1,6 @@
 package db
 
 import (
-	"encoding/binary"
-	"encoding/hex"
 	"net"
 	"time"
 
@@ -114,19 +112,11 @@ func GetLogfromSwitch(swName string, period int) ([]switchLog, error) {
 func GetDHCPLogs(mac string, period int) ([]dhcpLog, error) {
 	var logs []dhcpLog
 
-	bytes, err := hex.DecodeString(mac)
-	if err != nil {
-		return nil, err
-	}
-
-	bytes = append([]byte{0, 0}, bytes...)
-	macInt := binary.BigEndian.Uint64(bytes)
-
 	duration := time.Minute * -time.Duration(period)
 
 	time := time.Now().Add(duration)
 
-	if err := server.Server.DB.Select(&logs, "SELECT ts, message, ip FROM dhcp.events WHERE mac = ? AND ts > ? ORDER BY ts DESC", macInt, time); err != nil {
+	if err := server.Server.DB.Select(&logs, "SELECT ts, message, ip FROM dhcp.events WHERE mac = MACStringToNum(?) AND ts > ? ORDER BY ts DESC", mac, time); err != nil {
 		return nil, err
 	}
 
