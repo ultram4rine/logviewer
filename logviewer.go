@@ -4,12 +4,12 @@ import (
 	"flag"
 	"net/http"
 
+	"github.com/ultram4rine/logviewer/handlers"
+	"github.com/ultram4rine/logviewer/server"
+
 	"github.com/gorilla/mux"
 	_ "github.com/kshvakov/clickhouse"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/ultram4rine/logviewer/handlers"
-	"github.com/ultram4rine/logviewer/server"
 )
 
 var configPath = flag.String("c", "logviewer.conf.json", "Path to logviewer config json")
