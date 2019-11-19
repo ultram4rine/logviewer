@@ -52,13 +52,13 @@ function send() {
         for (var i in data) {
           output +=
             "<td>" +
-            data[i].Mac +
+            data[i].MACStr +
             "</td><td>" +
             data[i].IP +
             "</td><td>" +
             data[i].Message +
             "</td><td>" +
-            data[i].Time +
+            data[i].TimeStampStr +
             "</td></tr>";
         }
         output += "</tbody></table>";

@@ -1,6 +1,8 @@
 package db
 
 import (
+	"encoding/binary"
+	"encoding/hex"
 	"net"
 	"time"
 
@@ -21,21 +23,23 @@ type switchLog struct {
 
 type dhcpLog struct {
 	Timestamp     time.Time `db:"ts"`
-	TimestampNano int64     `db:"ts_nano"`
-	Message       string    `db:"message"`
-	Server        string    `db:"server"`
-	Severity      string    `db:"severity"`
-	IP            string    `db:"ip"`
-	MAC           uint64    `db:"mac"`
-	Request       string    `db:"request"`
-	ServerID      string    `db:"server_id"`
-	ClientHost    string    `db:"client_host"`
-	Link          string    `db:"link"`
-	Extra         string    `db:"extra"`
-	ReverseName   string    `db:"reverse_name"`
-	DNSName       string    `db:"dns_name"`
-	Reason        string    `db:"reason"`
-	Subnet        string    `db:"subnet"`
+	TimeStampStr  string
+	TimestampNano int64  `db:"ts_nano"`
+	Message       string `db:"message"`
+	Server        string `db:"server"`
+	Severity      string `db:"severity"`
+	IP            net.IP `db:"ip"`
+	MAC           uint64 `db:"mac"`
+	MACStr        string
+	Request       string `db:"request"`
+	ServerID      string `db:"server_id"`
+	ClientHost    string `db:"client_host"`
+	Link          string `db:"link"`
+	Extra         string `db:"extra"`
+	ReverseName   string `db:"reverse_name"`
+	DNSName       string `db:"dns_name"`
+	Reason        string `db:"reason"`
+	Subnet        string `db:"subnet"`
 }
 
 func GetAvailableSwitches() ([]switchLog, error) {
@@ -110,14 +114,25 @@ func GetLogfromSwitch(swName string, period int) ([]switchLog, error) {
 func GetDHCPLogs(mac string, period int) ([]dhcpLog, error) {
 	var logs []dhcpLog
 
-	//TODO: parse mac string to uint64
+	bytes, err := hex.DecodeString(mac)
+	if err != nil {
+		return nil, err
+	}
+
+	bytes = append([]byte{0, 0}, bytes...)
+	macInt := binary.BigEndian.Uint64(bytes)
 
 	duration := time.Minute * -time.Duration(period)
 
 	time := time.Now().Add(duration)
 
-	if err := server.Server.DB.Select(&logs, "SELECT ts, message, ip FROM dhcp.events WHERE mac = ? AND ts > ? ORDER BY ts DESC", mac, time); err != nil {
+	if err := server.Server.DB.Select(&logs, "SELECT ts, message, ip FROM dhcp.events WHERE mac = ? AND ts > ? ORDER BY ts DESC", macInt, time); err != nil {
 		return nil, err
+	}
+
+	for i := range logs {
+		logs[i].MACStr = mac
+		logs[i].TimeStampStr = logs[i].Timestamp.Format("2006-01-02 15:04:05")
 	}
 
 	return logs, nil
