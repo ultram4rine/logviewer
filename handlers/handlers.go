@@ -64,7 +64,7 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 
 			result, err := db.GetDHCPLogs(mac, periodInt)
 			if err != nil {
-				log.Warnf("Error with geting dhcp logs: %v", err)
+				log.Warnf("Error getting dhcp logs: %v", err)
 			}
 
 			logsJSON, err := json.Marshal(result)
