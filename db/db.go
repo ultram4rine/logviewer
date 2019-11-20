@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/hex"
 	"net"
 	"time"
 
@@ -28,7 +29,7 @@ type dhcpLog struct {
 	Severity      string `db:"severity"`
 	IP            net.IP `db:"ip"`
 	MAC           uint64 `db:"mac"`
-	MACStr        string
+	MACStr        string `db:"macstr"`
 	Request       string `db:"request"`
 	ServerID      string `db:"server_id"`
 	ClientHost    string `db:"client_host"`
@@ -116,12 +117,14 @@ func GetDHCPLogs(mac string, period int) ([]dhcpLog, error) {
 
 	time := time.Now().Add(duration)
 
-	if err := server.Server.DB.Select(&logs, "SELECT ts, message, ip FROM dhcp.events WHERE mac = MACStringToNum(?) AND ts > ? ORDER BY ts DESC", mac, time); err != nil {
+	mhex, _ := hex.DecodeString(mac)
+	mcvt := net.HardwareAddr(mhex).String()
+
+	if err := server.Server.DB.Select(&logs, "SELECT ts, MACNumToString(mac) as macstr, message, ip FROM dhcp.events WHERE mac = MACStringToNum(?) AND ts > ? ORDER BY ts DESC", mcvt, time); err != nil {
 		return nil, err
 	}
 
 	for i := range logs {
-		logs[i].MACStr = mac
 		logs[i].TimeStampStr = logs[i].Timestamp.Format("2006-01-02 15:04:05")
 	}
 
