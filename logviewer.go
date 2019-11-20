@@ -26,9 +26,12 @@ func main() {
 
 	router.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 
-	router.HandleFunc("/get", handlers.GetHandler).Methods("GET")
+	router.HandleFunc("/get/switch", handlers.GetSwitchLogsHandler).Methods("GET")
+	router.HandleFunc("/get/dhcp", handlers.GetDHCPLogsHandler).Methods("GET")
+
 	router.HandleFunc("/getavailable", handlers.SimilarHandler).Methods("GET")
 	router.HandleFunc("/findsimilar", handlers.SimilarHandler).Methods("GET")
+
 	router.HandleFunc("/login", handlers.LoginHandler)
 	router.HandleFunc("/", handlers.RootHandler)
 

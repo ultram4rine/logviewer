@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -23,61 +24,63 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "public/html/index.html")
 }
 
-//GetHandler handle get request
-func GetHandler(w http.ResponseWriter, r *http.Request) {
+func GetSwitchLogsHandler(w http.ResponseWriter, r *http.Request) {
 	if !alreadyLogin(r) {
 		http.Redirect(w, r, "/login", http.StatusUnauthorized)
 		return
 	}
 
-	getType := r.FormValue("type")
-
-	switch getType {
-	case "sw":
-		{
-			name := r.FormValue("name")
-			time := r.FormValue("time")
-			periodInt, err := strconv.Atoi(time)
-			if err != nil {
-				log.Warnf("Error parsing time: %v", err)
-			}
-
-			result, err := db.GetLogfromSwitch(name, periodInt)
-			if err != nil {
-				log.Warnf("Error printing log file of %s: %v", name, err)
-			}
-
-			logsJSON, err := json.Marshal(result)
-			if err != nil {
-				log.Warn(err)
-			}
-
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(logsJSON)
-		}
-	case "dhcp":
-		{
-			mac := r.FormValue("mac")
-			time := r.FormValue("time")
-			periodInt, err := strconv.Atoi(time)
-			if err != nil {
-				log.Warnf("Error parsing time: %v", err)
-			}
-
-			result, err := db.GetDHCPLogs(mac, periodInt)
-			if err != nil {
-				log.Warnf("Error getting dhcp logs: %v", err)
-			}
-
-			logsJSON, err := json.Marshal(result)
-			if err != nil {
-				log.Warn(err)
-			}
-
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(logsJSON)
-		}
+	name := r.FormValue("name")
+	time := r.FormValue("time")
+	periodInt, err := strconv.Atoi(time)
+	if err != nil {
+		log.Warnf("Error parsing time: %v", err)
 	}
+
+	result, err := db.GetLogfromSwitch(name, periodInt)
+	if err != nil {
+		log.Warnf("Error printing log file of %s: %v", name, err)
+	}
+
+	logsJSON, err := json.Marshal(result)
+	if err != nil {
+		log.Warn(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(logsJSON)
+}
+
+func GetDHCPLogsHandler(w http.ResponseWriter, r *http.Request) {
+	if !alreadyLogin(r) {
+		http.Redirect(w, r, "/login", http.StatusUnauthorized)
+		return
+	}
+
+	mac := r.FormValue("mac")
+	time := r.FormValue("time")
+	periodInt, err := strconv.Atoi(time)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error parsing time: %s", err)
+
+		log.Warnf(errMsg)
+
+		http.Error(w, errMsg, http.StatusInternalServerError)
+		return
+	}
+
+	result, err := db.GetDHCPLogs(mac, periodInt)
+	if err != nil {
+		log.Warnf("Error getting dhcp logs: %v", err)
+	}
+
+	logsJSON, err := json.Marshal(result)
+	if err != nil {
+		log.Warn(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(logsJSON)
 }
 
 //AvailableHandler gets all avaible switches to show logs

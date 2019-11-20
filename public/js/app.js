@@ -38,7 +38,7 @@ function send() {
   if (type === "dhcp") {
     $.ajax({
       type: "GET",
-      url: "/get",
+      url: "/get/dhcp",
       data: { type: type, mac: mac, time: time },
       dataType: "json",
       statusCode: {
@@ -68,7 +68,7 @@ function send() {
   } else {
     $.ajax({
       type: "GET",
-      url: "/get",
+      url: "/get/switch",
       data: { type: type, name: name, time: time },
       dataType: "json",
       statusCode: {
