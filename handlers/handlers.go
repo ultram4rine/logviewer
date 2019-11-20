@@ -17,6 +17,7 @@ import (
 func RootHandler(w http.ResponseWriter, r *http.Request) {
 	if !alreadyLogin(r) {
 		http.Redirect(w, r, "/login", http.StatusFound)
+		return
 	}
 
 	http.ServeFile(w, r, "public/html/index.html")
@@ -26,6 +27,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 func GetHandler(w http.ResponseWriter, r *http.Request) {
 	if !alreadyLogin(r) {
 		http.Redirect(w, r, "/login", http.StatusUnauthorized)
+		return
 	}
 
 	getType := r.FormValue("type")
@@ -82,6 +84,7 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 func AvailableHandler(w http.ResponseWriter, r *http.Request) {
 	if !alreadyLogin(r) {
 		http.Redirect(w, r, "/login", http.StatusUnauthorized)
+		return
 	}
 
 	switches, err := db.GetAvailableSwitches()
@@ -102,6 +105,7 @@ func AvailableHandler(w http.ResponseWriter, r *http.Request) {
 func SimilarHandler(w http.ResponseWriter, r *http.Request) {
 	if !alreadyLogin(r) {
 		http.Redirect(w, r, "/login", http.StatusUnauthorized)
+		return
 	}
 
 	template := r.FormValue("t")
