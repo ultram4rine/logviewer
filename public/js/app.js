@@ -46,6 +46,9 @@ function send() {
           window.location.href = "/login";
         }
       },
+      error: function(XHR) {
+        alert(XHR.responceText);
+      },
       success: function(data) {
         var output =
           "<table><thead><tr><th>Mac</th><th>IP</th><th>Message</th><th>Time</th></thead><tr>";
@@ -75,6 +78,9 @@ function send() {
         401: function() {
           window.location.href = "/login";
         }
+      },
+      error: function(XHR) {
+        alert(XHR.responceText);
       },
       success: function(data) {
         var output =

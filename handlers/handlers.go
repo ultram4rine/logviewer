@@ -32,19 +32,35 @@ func GetSwitchLogsHandler(w http.ResponseWriter, r *http.Request) {
 
 	name := r.FormValue("name")
 	time := r.FormValue("time")
+
 	periodInt, err := strconv.Atoi(time)
 	if err != nil {
-		log.Warnf("Error parsing time: %v", err)
+		errMsg := fmt.Sprintf("Error parsing time: %s", err)
+
+		log.Warnf(errMsg)
+
+		http.Error(w, errMsg, http.StatusInternalServerError)
+		return
 	}
 
 	result, err := db.GetLogfromSwitch(name, periodInt)
 	if err != nil {
-		log.Warnf("Error printing log file of %s: %v", name, err)
+		errMsg := fmt.Sprintf("Error getting logs of %s switch: %v", name, err)
+
+		log.Warnf(errMsg)
+
+		http.Error(w, errMsg, http.StatusInternalServerError)
+		return
 	}
 
 	logsJSON, err := json.Marshal(result)
 	if err != nil {
-		log.Warn(err)
+		errMsg := fmt.Sprintf("Error marshalling log of %s to JSON: %v", name, err)
+
+		log.Warnf(errMsg)
+
+		http.Error(w, errMsg, http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -59,6 +75,7 @@ func GetDHCPLogsHandler(w http.ResponseWriter, r *http.Request) {
 
 	mac := r.FormValue("mac")
 	time := r.FormValue("time")
+
 	periodInt, err := strconv.Atoi(time)
 	if err != nil {
 		errMsg := fmt.Sprintf("Error parsing time: %s", err)
@@ -71,12 +88,22 @@ func GetDHCPLogsHandler(w http.ResponseWriter, r *http.Request) {
 
 	result, err := db.GetDHCPLogs(mac, periodInt)
 	if err != nil {
-		log.Warnf("Error getting dhcp logs: %v", err)
+		errMsg := fmt.Sprintf("Error getting logs of %s mac: %v", mac, err)
+
+		log.Warnf(errMsg)
+
+		http.Error(w, errMsg, http.StatusInternalServerError)
+		return
 	}
 
 	logsJSON, err := json.Marshal(result)
 	if err != nil {
-		log.Warn(err)
+		errMsg := fmt.Sprintf("Error marshalling log of %s to JSON: %v", mac, err)
+
+		log.Warnf(errMsg)
+
+		http.Error(w, errMsg, http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
