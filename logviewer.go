@@ -1,23 +1,22 @@
 package main
 
 import (
-	"flag"
 	"net/http"
 
 	"github.com/ultram4rine/logviewer/handlers"
 	"github.com/ultram4rine/logviewer/server"
 
+	"git.sgu.ru/sgu/systemdutil"
+	"github.com/coreos/go-systemd/v22/daemon"
 	"github.com/gorilla/mux"
 	_ "github.com/kshvakov/clickhouse"
 	log "github.com/sirupsen/logrus"
 )
 
-var configPath = flag.String("c", "logviewer.conf.json", "Path to logviewer config json")
-
 func main() {
-	flag.Parse()
+	systemdutil.Init()
 
-	err := server.Init(*configPath)
+	err := server.Init()
 	if err != nil {
 		log.Fatalf("Can't init programm: %v", err)
 	}
@@ -35,6 +34,14 @@ func main() {
 	router.HandleFunc("/login", handlers.LoginHandler)
 	router.HandleFunc("/", handlers.RootHandler)
 
-	log.Println("Starting server on " + server.Config.Port + " port")
-	log.Fatal(http.ListenAndServe(server.Config.Port, router))
+	_, httpSockets, err := systemdutil.ListenSystemdEx(systemdutil.ActivationFiles())
+	if err != nil {
+		log.Fatal(err)
+	}
+	httpSockets = append(httpSockets, systemdutil.MustListenTCPSlice(server.Config.ListenHTTP)...)
+	systemdutil.ServeAll(nil, httpSockets, nil)
+
+	daemon.SdNotify(false, daemon.SdNotifyReady)
+	systemdutil.WaitSigint()
+	daemon.SdNotify(false, daemon.SdNotifyStopping)
 }

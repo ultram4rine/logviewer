@@ -1,12 +1,18 @@
 [Unit]
 Description=LogViewer WEB Application for viewing logs
 After=network-online.target
+Requires=logviewer.socket
 
 [Service]
-WorkingDirectory=/var/www/logviewer/
-ExecStart=/usr/local/bin/logviewer -c /var/www/logviewer/conf.json
-User=root
-Restart=always
-
+Type=notify
+EnvironmentFile=-/etc/sysconfig/logviewer
+WorkingDirectory=/var/lib/logviewer
+ExecStart=/usr/bin/logviewer
+User=logviewer
+Group=logviewer
+KillMode=process
+Restart=on-failure
+ 
 [Install]
 WantedBy=multi-user.target
+Also=logviewer.socket

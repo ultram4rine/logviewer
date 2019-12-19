@@ -1,26 +1,25 @@
 package server
 
 import (
-	"encoding/json"
 	"errors"
-	"io/ioutil"
 
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
+	"github.com/kelseyhightower/envconfig"
 )
 
 var Config struct {
-	Port          string `json:"listenPort"`
-	LdapUser      string `json:"ldapUser"`
-	LdapPassword  string `json:"ldapPassword"`
-	LdapServer    string `json:"ldapServer"`
-	LdapBaseDN    string `json:"ldapBaseDN"`
-	DBHost        string `json:"dbHost"`
-	DBName        string `json:"dbName"`
-	DBUser        string `json:"dbUser"`
-	DBPassword    string `json:"dbPassword"`
-	SessionKey    string `json:"sessionKey"`
-	EncryptionKey string `json:"encryptionKey"`
+	ListenHTTP    []string `envconfig:"LISTEN_HTTP"`
+	LdapUser      string   `envconfig:"LDAP_USER"`
+	LdapPassword  string   `envconfig:"LDAP_PASSWORD"`
+	LdapServer    string   `envconfig:"LDAP_SERVER"`
+	LdapBaseDN    string   `envconfig:"LDAP_BASE_DN"`
+	DBHost        string   `envconfig:"DB_HOST" default:"localhost"`
+	DBName        string   `envconfig:"DB_NAME" default:"logs"`
+	DBUser        string   `envconfig:"DB_USER" default:"root"`
+	DBPassword    string   `envconfig:"DB_PASSWORD"`
+	SessionKey    string   `envconfig:"SESSION_KEY"`
+	EncryptionKey string   `envconfig:"ENCRYPTION_KEY"`
 }
 
 var Server struct {
@@ -28,26 +27,21 @@ var Server struct {
 	Store *sessions.CookieStore
 }
 
-func Init(confPath string) error {
-	confdata, err := ioutil.ReadFile(confPath)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(confdata, &Config)
-	if err != nil {
-		return err
+func Init() (err error) {
+	if err = envconfig.Process("hosting", &Config); err != nil {
+		return
 	}
 
 	if Config.SessionKey == "" {
-		return errors.New("Empty session key")
+		err = errors.New("Empty session key")
+		return
 	}
 
 	Server.Store = sessions.NewCookieStore([]byte(Config.SessionKey), []byte(Config.EncryptionKey))
 
 	Server.DB, err = sqlx.Open("clickhouse", Config.DBHost+"?username="+Config.DBUser+"&password="+Config.DBPassword+"&database="+Config.DBName)
 	if err != nil {
-		return err
+		return
 	}
 
 	return nil
