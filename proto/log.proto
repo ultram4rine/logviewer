@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package log;
+
+service Log {
+    rpc GetDHCPLog(DHCPLogEntry) returns (DHCPLogs) {}
+    rpc GetSimilarSwitches(SwName) returns (Switches) {}
+    rpc GetSwitchLog(SwitchLogEntry) returns (SwitchLogs) {}
+}
+
+message SwName {
+    string name = 1;
+}
+
+message Switch {
+    string name = 1;
+    string IP = 2;
+}
+
+message Switches {
+    repeated Switch switch = 1;
+}
+
+message DHCPLogEntry {
+    uint64 MAC = 1;
+    string from = 2;
+    string to = 3;
+}
+
+message SwitchLogEntry {
+    string name = 1;
+    string from = 2;
+    string to = 3;
+}
+
+message DHCPLog {
+    string ip = 1;
+    string timestamp = 2;
+    string message = 3;
+}
+
+message DHCPLogs {
+    repeated DHCPLog log = 1;
+}
+
+message SwitchLog {
+    string ip = 1;
+    string name = 2;
+    string ts = 3;
+    string message = 4;
+}
+
+message SwitchLogs {
+    repeated SwitchLog log = 1;
+}
